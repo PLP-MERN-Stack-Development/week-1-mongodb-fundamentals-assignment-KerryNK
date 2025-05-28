@@ -3,8 +3,8 @@
 // Import MongoDB client
 const { MongoClient } = require('mongodb');
 
-// Connection URI (replace with your MongoDB connection string if using Atlas)
-const uri = 'mongodb://localhost:27017';
+// Get MongoDB connection string from env var or default to local
+const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 
 // Database and collection names
 const dbName = 'plp_bookstore';
@@ -40,7 +40,7 @@ const books = [
     price: 9.99,
     in_stock: true,
     pages: 180,
-    publisher: 'Charles Scribner\'s Sons'
+    publisher: "Charles Scribner's Sons"
   },
   {
     title: 'Brave New World',
@@ -157,7 +157,9 @@ async function insertBooks() {
 
     // Insert the books
     const result = await collection.insertMany(books);
-    console.log(`${result.insertedCount} books were successfully inserted into the database`);
+    // Use insertedIds for compatibility with newer drivers
+    const insertedCount = result.insertedCount || Object.keys(result.insertedIds).length;
+    console.log(`${insertedCount} books were successfully inserted into the database`);
 
     // Display the inserted books
     console.log('\nInserted books:');
@@ -168,6 +170,7 @@ async function insertBooks() {
 
   } catch (err) {
     console.error('Error occurred:', err);
+    process.exit(1); // Exit with error code for CI
   } finally {
     // Close the connection
     await client.close();
@@ -176,23 +179,7 @@ async function insertBooks() {
 }
 
 // Run the function
-insertBooks().catch(console.error);
-
-/*
- * Example MongoDB queries you can try after running this script:
- *
- * 1. Find all books:
- *    db.books.find()
- *
- * 2. Find books by a specific author:
- *    db.books.find({ author: "George Orwell" })
- *
- * 3. Find books published after 1950:
- *    db.books.find({ published_year: { $gt: 1950 } })
- *
- * 4. Find books in a specific genre:
- *    db.books.find({ genre: "Fiction" })
- *
- * 5. Find in-stock books:
- *    db.books.find({ in_stock: true })
- */
+insertBooks().catch(err => {
+  console.error('Unhandled error:', err);
+  process.exit(1);
+});
