@@ -9,6 +9,7 @@ tests:
     points: 10
 
   - name: Check if queries.js exists
+    setup: npm install mongodb
     run: test -f queries.js
     input: ""
     output: ""
@@ -36,7 +37,7 @@ tests:
 
   - name: Check advanced query in queries.js
     setup: npm install mongodb
-    run: grep -q "\$gt" queries.js && grep -q "\$and" queries.js
+    run: grep -q "\\$gt" queries.js && grep -q "\\$and" queries.js
     input: ""
     output: ""
     comparison: included
@@ -45,7 +46,7 @@ tests:
 
   - name: Check aggregation pipeline in queries.js
     setup: npm install mongodb
-    run: grep -q "aggregate" queries.js && grep -q "\$group" queries.js
+    run: grep -q "aggregate" queries.js && grep -q "\\$group" queries.js
     input: ""
     output: ""
     comparison: included
@@ -59,4 +60,4 @@ tests:
     output: ""
     comparison: included
     timeout: 10
-    points: 15 
+    points: 15
