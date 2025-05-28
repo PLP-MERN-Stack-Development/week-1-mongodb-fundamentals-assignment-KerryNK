@@ -1,49 +1,62 @@
-name: MongoDB Classroom Tests
+tests:
+  - name: Check if insert_books.js exists
+    setup: npm install mongodb
+    run: test -f insert_books.js
+    input: ""
+    output: ""
+    comparison: included
+    timeout: 10
+    points: 10
 
-on:
-  push:
-    paths:
-      - '**.js'
-      - '.github/workflows/classroom.yml'
-  pull_request:
+  - name: Check if queries.js exists
+    run: test -f queries.js
+    input: ""
+    output: ""
+    comparison: included
+    timeout: 10
+    points: 10
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  - name: Run insert_books.js
+    setup: npm install mongodb
+    run: node insert_books.js
+    input: ""
+    output: "books were successfully inserted into the database"
+    comparison: included
+    timeout: 20
+    points: 20
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+  - name: Check basic query in queries.js
+    setup: npm install mongodb
+    run: grep -q "find({" queries.js && grep -q "genre:" queries.js
+    input: ""
+    output: ""
+    comparison: included
+    timeout: 10
+    points: 15
 
-      - name: Install dependencies
-        run: npm install mongodb
+  - name: Check advanced query in queries.js
+    setup: npm install mongodb
+    run: grep -q "\$gt" queries.js && grep -q "\$and" queries.js
+    input: ""
+    output: ""
+    comparison: included
+    timeout: 10
+    points: 15
 
-      - name: Check if insert_books.js exists
-        run: test -f insert_books.js
+  - name: Check aggregation pipeline in queries.js
+    setup: npm install mongodb
+    run: grep -q "aggregate" queries.js && grep -q "\$group" queries.js
+    input: ""
+    output: ""
+    comparison: included
+    timeout: 10
+    points: 15
 
-      - name: Check if queries.js exists
-        run: test -f queries.js
-
-      - name: Run insert_books.js
-        run: node insert_books.js
-        continue-on-error: true
-
-      - name: Check output of insert_books.js
-        run: |
-          node insert_books.js | grep "books were successfully inserted into the database"
-        continue-on-error: true
-
-      - name: Check basic query in queries.js
-        run: grep -q "find({" queries.js && grep -q "genre:" queries.js
-
-      - name: Check advanced query in queries.js
-        run: grep -q "\$gt" queries.js && grep -q "\$and" queries.js
-
-      - name: Check aggregation pipeline in queries.js
-        run: grep -q "aggregate" queries.js && grep -q "\$group" queries.js
-
-      - name: Check indexing in queries.js
-        run: grep -q "createIndex" queries.js && grep -q "explain" queries.js
+  - name: Check indexing in queries.js
+    setup: npm install mongodb
+    run: grep -q "createIndex" queries.js && grep -q "explain" queries.js
+    input: ""
+    output: ""
+    comparison: included
+    timeout: 10
+    points: 15 
