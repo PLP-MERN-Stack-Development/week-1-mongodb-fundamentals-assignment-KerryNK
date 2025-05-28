@@ -4,8 +4,7 @@
 const { MongoClient } = require('mongodb');
 
 // Get MongoDB connection string from env var or default to local
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-
+const uri = 'mongodb+srv://kerrym:W2DDlHaNZtvbg45u@cluster0.qjjen.mongodb.net/plp_bookstore?retryWrites=true&w=majority';
 // Database and collection names
 const dbName = 'plp_bookstore';
 const collectionName = 'books';
