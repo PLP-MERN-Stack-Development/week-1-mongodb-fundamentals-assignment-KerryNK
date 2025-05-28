@@ -1,0 +1,45 @@
+name: Classroom MongoDB Assignment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install mongodb
+
+      - name: Check if insert_books.js exists
+        run: test -f insert_books.js
+
+      - name: Check if queries.js exists
+        run: test -f queries.js
+
+      - name: Run insert_books.js
+        run: |
+          node insert_books.js | tee output.log
+          grep -q "books were successfully inserted into the database" output.log
+
+      - name: Check basic query in queries.js
+        run: grep -q "find({" queries.js && grep -q "genre:" queries.js
+
+      - name: Check advanced query in queries.js
+        run: grep -q "\$gt" queries.js && grep -q "\$and" queries.js
+
+      - name: Check aggregation pipeline in queries.js
+        run: grep -q "aggregate" queries.js && grep -q "\$group" queries.js
+
+      - name: Check indexing in queries.js
+        run: grep -q "createIndex" queries.js && grep -q "explain" queries.js
